@@ -1,0 +1,72 @@
+# =====================
+# OS files
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Logs
+# =====================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =====================
+# Dependencies
+# =====================
+node_modules/
+vendor/
+.env
+.env.local
+.env.*.local
+
+# =====================
+# Build outputs
+# =====================
+dist/
+build/
+out/
+target/
+*.exe
+*.class
+
+# =====================
+# IDE / Editor
+# =====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# =====================
+# Python
+# =====================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# =====================
+# Java
+# =====================
+*.jar
+*.war
+
+# =====================
+# Coverage / testing
+# =====================
+coverage/
+*.lcov
+
+# =====================
+# Misc
+# =====================
+.DS_Store
+*.tmp
+*.bak
