@@ -1,37 +1,48 @@
-const {BOOKS} = require("../models/book")
+const booksTable = require("../models/book.model")
+const db = require('../db');
+const { table } = require("node:console");
+const {eq , ilike, sql} = require('drizzle-orm');
+const { title } = require("node:process");
 
-exports.getAllBooks = function(req,res){
-    res.json(BOOKS);
+exports.getAllBooks = async function(req,res){
+    const search  = req.query.search;
+
+
+    if(search){
+      const books =   await db.select().from(booksTable).where(sql`to_tsvector('english',${booksTable.title})@@ to_tsquery('english',${search})`);
+      return res.json(books);
+    }
+    const books = await db.select().from(booksTable)
+    return res.json(books);
 }
-exports.getBookbyID = function(req,res){
-     const id = parseInt(req.params.id)
-    if(isNaN(id)) return res.status(404).json({error: ` id  must be an integer`}) 
-    const book = BOOKS.find(e=> e.id == id)
+exports.getBookbyID =async function(req,res){
+     const id = req.params.id
+    const [book] = await db.select().from(booksTable).where(table => eq(table.id , id)).limit(1)
 
     if(!book) return res.status(404).json({ error: ` book with id ${id} not exist`})
     return res.json(book)
 }
 
-exports.createBook = function(req ,res){
-     const{ title, author} = req.body
+exports.createBook = async function(req ,res){
+     const{ title, description ,  authorId} = req.body
     if(!title || title==='')
         return res.status(400).json({error:'title is required'})
-    if(!author || author==='')
-        return res.status(400).json({error:'author is required'})
 
-    const id = BOOKS.length + 1
-    const book ={id , title , author}
-    BOOKS.push(book)
-    return res.status(201).json({message: `Book created successfully `, id})
+    const [result] =await db.insert(booksTable).values({
+        title ,
+        authorId,
+        description,
+    }).returning({
+        id: booksTable.id,
+
+    })
+
+    return res.status(201).json({message: `Book created successfully `, id: result.id})
 }
 
-exports.deleteBook = function(req,res){
-    const id = parseInt(req.params.id)
+exports.deleteBook = async function(req,res){
+    const id = req.params.id
 
-    if(isNaN(id)) return res.status(400).json({error: ` id  must be an integer`}) 
-    
-    const IndexFind = BOOKS.findIndex(e=> e.id ===id)
-    if(IndexFind <0) return res.status(400).json({error: `does not exist `})
-    BOOKS.splice(IndexFind,1)
+    await  db.delete(booksTable).where(eq(booksTable.id , id))
     return res.status(200).json({message:` BOOKS deleted`})
 }

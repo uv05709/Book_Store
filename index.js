@@ -1,3 +1,4 @@
+require("dotenv/config")
 const express = require("express")
 const { error } = require("node:console")
 const fs = require("fs")
