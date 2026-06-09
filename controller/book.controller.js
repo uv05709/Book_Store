@@ -3,6 +3,7 @@ const db = require('../db');
 const { table } = require("node:console");
 const {eq , ilike, sql} = require('drizzle-orm');
 const { title } = require("node:process");
+const authorTable = require("../models/author.model");
 
 exports.getAllBooks = async function(req,res){
     const search  = req.query.search;
@@ -17,7 +18,7 @@ exports.getAllBooks = async function(req,res){
 }
 exports.getBookbyID =async function(req,res){
      const id = req.params.id
-    const [book] = await db.select().from(booksTable).where(table => eq(table.id , id)).limit(1)
+    const [book] = await db.select().from(booksTable).where(table => eq(table.id , id)).leftJoin(authorTable.authorId,authorTable).limit(1)
 
     if(!book) return res.status(404).json({ error: ` book with id ${id} not exist`})
     return res.json(book)
